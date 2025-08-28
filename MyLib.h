@@ -1,6 +1,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <stdbool.h>
 
 typedef struct Processo {
     int id;
@@ -9,20 +10,74 @@ typedef struct Processo {
     int ciclos;
     char recurso[12]; // Definir como DISCO ou "" no programa.
     int prioridadeOriginal;
-    int jaBloqueado;
-    struct Processo *prox;
+    bool jaBloqueado;
 } Processo;
 
-// Filas globais para simplificação (Ini io do processo Fazer os arq.
-Processo *filaAlta = NULL, *filaMedia = NULL, *filaBaixa = NULL, *filaBloqueados = NULL;
-int contadorAlta = 0, cicloAtual = 0;
+typedef struct Node{
+    Processo data;
+    struct Node *prox;
+} Node;
+
+typedef struct Fila{
+    Node *inicio;
+    Node *final;
+    int size;
+} Fila;
+
+typedef struct Escalonador {
+    Fila Alta, Media, Baixa, Bloqueados;
+    int contadorAlta;
+} Escalonador;
+
+
+
+// Filas Organizadas no Escalonador
+Escalonador escalonador;
+
+void iniciar_fila(Fila *f) { 
+    f->inicio = f->final = NULL; 
+    f->size = 0; 
+}
+
+
+int fila_adicionar(Fila *f, const Processo *p) {
+    Node *novo = (Node*) malloc(sizeof(Node)); //Malloc reserva um espaço na memoria heap do tamanho de um Node // o Ponteiro novo é definido pra conter o endereço gerado pelo Malloc 
+    if (!novo) return 0;                       // o If checa se tudo correu bem
+
+    novo->data = *p;    
+    novo->prox = NULL; 
+
+    if (!f->final) { //Checa se a fila a qual o processo vai entrar é vazia (Se tem um Node Final) 
+        f->inicio = f->final = novo; // Se for vazia, atribui que o Node é agora tanto o primeiro quanto o ultimo Node da Lista
+    } else {
+        f->final->prox = novo; //Indexa o ultimo Node ao novo
+        f->final = novo; // Define que o Node em *novo agora é o "novo" ultimo da lista
+    }
+
+    f->size++;
+    return 1; 
+}
+
+int fila_remover(Fila *f, Processo *saida) {
+    if (!f->inicio) return 0; // Checa pra ver se a fila é valida
+
+    Node *prim = f->inicio; // Cria um ponteiro "Prim" que indica Node, e define que ele guarda o endereço do atual Node Inicial da fila
+    if (saida) *saida = prim->data; // Copia as informações do processo removido para o endereço de Saida
+
+    f->inicio = prim->prox; //Define o proximo processo como sendo o primeiro da fila
+    if (!f->inicio) f->final = NULL; //se o processo era o ultimo, declara a fila como vazia
+
+    free(prim);
+    f->size--; 
+    return 1;
+}
 
 void carregarProcessos() {  //Parte da Leitura de Arquivo
     FILE *f = fopen("Processos/processos","r");
     if (!f) { printf("Erro ao abrir processos.txt\n"); return; }
 
     int id, pri, cic; char nome[40], recurso[12];
-    while (fscanf(f,"%d %39s %d %d %11s", &id,nome,&pri,&cic,recurso)==5) {
+    while (fscanf(f,"%d %39s %d %d %11s", &id,nome,&pri,&cic,recurso)==5) { //Não seria melhor um Fgets?
         Processo *p = (Processo*) malloc(sizeof(Processo));
         p->id=id;
         strcpy(p->nome,nome);
@@ -31,12 +86,11 @@ void carregarProcessos() {  //Parte da Leitura de Arquivo
         if (strcmp(recurso,"-")==0) recurso[0]='\0';
         strcpy(p->recurso,recurso);
         p->prioridadeOriginal=p->prioridade;
-        p->jaBloqueado=0;
-        p->prox=NULL;
+        p->jaBloqueado=false;        
 
-        if (p->prioridade==1) enfileirar(&filaAlta,p);
-        else if (p->prioridade==2) enfileirar(&filaMedia,p);
-        else enfileirar(&filaBaixa,p);
+        if (p->prioridade==1) fila_adicionar(&escalonador.Alta,p);
+        else if (p->prioridade==2) fila_adicionar(&escalonador.Media,p);
+        else fila_adicionar(&escalonador.Baixa,p);
     }
     fclose(f);
     printf("Processos carregados com sucesso!\n");
