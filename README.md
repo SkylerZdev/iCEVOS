@@ -5,9 +5,9 @@
 -Professor: Dimmy
 
 -Integrantes
-Eric Santos Moura Lima – Matrícula: 
-Carlos Benedito Maciel II – Matrícula: 
-Rodrigo Tavares Bezerra – Matrícula:
+Eric Santos Moura Lima – Matrícula: ||
+Carlos Benedito Maciel II – Matrícula: || 
+Rodrigo Tavares Bezerra – Matrícula: ||
 
 -Repositório: [Link para o GitHub do projeto]
 
