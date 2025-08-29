@@ -72,6 +72,34 @@ int fila_remover(Fila *f, Processo *saida) {
     return 1;
 }
 
+bool estaVazia(Fila *f){ //Checa se a fila está vazia
+    if(f->inicio == NULL) return true; 
+    return false;
+}
+
+bool todasListasVazias(Escalonador *e){ //Checa se todas as filas estão vazias
+    if(estaVazia(&e->Alta) && estaVazia(&e->Media) && estaVazia(&e->Baixa) && estaVazia(&e->Bloqueados)) return true;
+    return false;
+}
+
+int fila_tamanho(Fila *f) { //Retorna o tamanho da fila
+    return f->size;
+}
+
+Node *Get(Fila *f, int i){ //Retorna o nó na posição i da fila
+    if(i >= f->size || i < 0) return NULL;
+    if(i == 0) return f->inicio;
+    if(i == f->size - 1) return f->final;
+    Node *atual = f->inicio;
+    int c = 0;
+
+    while (atual && c < i) {
+        atual = atual->prox;
+        c++;
+    }
+    return atual;
+}
+
 void carregarProcessos() {  //Parte da Leitura de Arquivo
     FILE *f = fopen("Processos/processos","r");
     if (!f) { printf("Erro ao abrir processos.txt\n"); return; }
@@ -94,4 +122,17 @@ void carregarProcessos() {  //Parte da Leitura de Arquivo
     }
     fclose(f);
     printf("Processos carregados com sucesso!\n");
+}
+
+// Função de Executar um Unico Ciclo
+void executarCicloUnico(Escalonador *e) {
+    // Implementar lógica para executar um ciclo único do escalonador
+}
+
+// Função de Rodar Escalonador
+void rodarEscalonador(Escalonador *e) {
+    while (!todasListasVazias(e)) {
+        executarCicloUnico(e);
+    }
+    printf("Escalonamento concluído!\n");
 }
