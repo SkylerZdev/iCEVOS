@@ -14,7 +14,7 @@ int main() {
         printf("|1 - Escalonador de Processos|\n");
         printf("|         2 - Sair           |\n");
         printf("|==========================  |\n");
-        printf("Escolha uma opção: ");
+        printf("Escolha uma opÃ§Ã£o: ");
         scanf("%d", &opMenuPrincipal);
 
         switch(opMenuPrincipal) {
@@ -23,8 +23,8 @@ int main() {
                     system("cls");
                     printf("|========= ESCALONADOR ===========|\n");
                     printf("|1 - Carregar processos do arquivo|\n");
-                    printf("|2 - Executar ciclo único         |\n");
-                    printf("|3 - Executar até terminar        |\n");
+                    printf("|2 - Executar ciclo Ãºnico         |\n");
+                    printf("|3 - Executar atÃ© terminar        |\n");
                     printf("|4 - Voltar ao menu principal     |\n");
 					printf("|=================================|\n");
                     printf("Escolha: ");
@@ -36,21 +36,21 @@ int main() {
                             system("pause");
                             break;
                         case 2:
-                            if (todasListasVazias()) {
+                            if (todasListasVazias(&escalonador)) {
                                 printf("Nenhum processo carregado!\n");
                             } else {
-                                executarCiclo();
+                                executarCicloUnico(&escalonador);
                             }
                             system("pause");
                             break;
                         case 3:
-                            rodarEscalonador();
+                            rodarEscalonador(&escalonador);
                             system("pause");
                             break;
                         case 4:
                             break;
                         default:
-                            printf("Opção inválida!\n");
+                            printf("OpÃ§Ã£o invÃ¡lida!\n");
                             system("pause");
                             break;
                     }
@@ -61,11 +61,11 @@ int main() {
                 printf("Sair\n");
                 break;
             default:
-                printf("Opção inválida!\n");
+                printf("OpÃ§Ã£o invÃ¡lida!\n");
                 system("pause");
                 break;
         }
     } while (opMenuPrincipal != 2);
 
-    return 0;
+    return 0 ;
 }
