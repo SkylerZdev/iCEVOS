@@ -72,21 +72,19 @@ int fila_remover(Fila *f, Processo *saida) {
     return 1;
 }
 
-bool estaVazia(Fila *f){ //Checa se a fila está vazia
-    if(f->inicio == NULL) return true; 
-    return false;
+inline bool estaVazia(Fila *f){ //Checa se a fila está vazia
+    return (f->inicio == NULL); 
 }
 
 bool todasListasVazias(Escalonador *e){ //Checa se todas as filas estão vazias
-    if(estaVazia(&e->Alta) && estaVazia(&e->Media) && estaVazia(&e->Baixa) && estaVazia(&e->Bloqueados)) return true;
-    return false;
+    return (estaVazia(&e->Alta) && estaVazia(&e->Media) && estaVazia(&e->Baixa) && estaVazia(&e->Bloqueados));
 }
 
-int fila_tamanho(Fila *f) { //Retorna o tamanho da fila
+inline int fila_tamanho(Fila *f) { //Retorna o tamanho da fila
     return f->size;
 }
 
-Node *Get(Fila *f, int i){ //Retorna o nó na posição i da fila
+Node *Get(Fila *f, int i){ //Retorna o nó da posição i da fila
     if(i >= f->size || i < 0) return NULL;
     if(i == 0) return f->inicio;
     if(i == f->size - 1) return f->final;
@@ -102,11 +100,11 @@ Node *Get(Fila *f, int i){ //Retorna o nó na posição i da fila
 
 void carregarProcessos() {  //Parte da Leitura de Arquivo
     FILE *f = fopen("Processos/processos","r");
-    if (!f) { printf("Erro ao abrir processos.txt\n"); return; }
+    if (!f) { printf("Erro ao abrir processos.txt\n"); return 0; }
 
     int id, pri, cic; char nome[40], recurso[12];
     while (fscanf(f,"%d %39s %d %d %11s", &id,nome,&pri,&cic,recurso)==5) { //Não seria melhor um Fgets?
-        Processo *p = (Processo*) malloc(sizeof(Processo));
+        Processo *p;
         p->id=id;
         strcpy(p->nome,nome);
         p->prioridade=(pri<1||pri>3)?3:pri;
