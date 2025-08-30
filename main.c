@@ -6,7 +6,7 @@
 int opMenuPrincipal, opMenuEscalonador;
 
 int main() {
-    setlocale(LC_ALL, "Portuguese");]
+    setlocale(LC_ALL, "Portuguese");
 	system("color A");
 
     do {
@@ -70,4 +70,5 @@ int main() {
 
     return 0 ;
 }
+
 
