@@ -100,8 +100,8 @@ Node *Get(Fila *f, int i){ //Retorna o nó da posição i da fila
 
 void carregarProcessos() {  //Parte da Leitura de Arquivo
     FILE *f = fopen("Processos/processos","r"); //Abre o Diretoório do arquivo 
-    if (!f) { printf("Erro ao abrir processos.txt\n"); return 0; }
-
+    if (!f) { printf("Erro ao abrir processos.txt\n"); 
+    }
     int id, pri, cic; char nome[40], recurso[12];
     char linha[128]; //Tamanho de caracteres que pode ser lido por linha
     while (fgets(linha, sizeof(linha), f)) { //Lê linha por linha do arquivo, melhor que fscanf
@@ -111,13 +111,22 @@ void carregarProcessos() {  //Parte da Leitura de Arquivo
             strcpy(p.nome, nome);
             p.prioridade = (pri < 1 || pri > 3) ? 3 : pri;
             p.ciclos = cic;
-            if (strcmp(recurso, "-") == 0) recurso[0] = '\0';
+            if (strcmp(recurso, "-") == 0) recurso[0] = '\0'; // Se o recurso for "-", define como string vazia
             strcpy(p.recurso, recurso);
             p.prioridadeOriginal = p.prioridade;
             p.jaBloqueado = false;
-            if (p.prioridade == 1) fila_adicionar(&escalonador.Alta, &p);
-            else if (p.prioridade == 2) fila_adicionar(&escalonador.Media, &p);
-            else fila_adicionar(&escalonador.Baixa, &p);
+            switch (p.prioridade) {
+                case 1:
+                    fila_adicionar(&escalonador.Alta, &p);
+                    break;
+                case 2:
+                    fila_adicionar(&escalonador.Media, &p);
+                    break;
+                case 3:
+                default:
+                    fila_adicionar(&escalonador.Baixa, &p);
+                    break;
+            }
         }
     }
     fclose(f);
@@ -131,8 +140,12 @@ void executarCicloUnico(Escalonador *e) {
 
 // Função de Rodar Escalonador
 void rodarEscalonador(Escalonador *e) {
-    while (!todasListasVazias(e)) {
-        executarCicloUnico(e);
+    if (todasListasVazias) { // Verifica se todas as listas estão vazias antes de iniciar
+        printf("Nenhum processo para executar.\n");
+        return;
+    }
+    while (!todasListasVazias(e)) { // Enquanto ainda houver processos em alguma fila
+        executarCicloUnico(e); // Executa um ciclo de CPU simulando escalonamento
     }
     printf("Escalonamento concluído!\n");
 }
