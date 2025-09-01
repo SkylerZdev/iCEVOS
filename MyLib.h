@@ -100,7 +100,7 @@ Node *Get(Fila *f, int i){ //Retorna o nó da posição i da fila
 
 void carregarProcessos() {  //Parte da Leitura de Arquivo
     FILE *f = fopen("Processos/processos","r"); //Abre o Diretoório do arquivo 
-    if (!f) { printf("Erro ao abrir processos.txt\n"); 
+    if (!f) { printf("Erro ao abrir processos.txt\n");
     }
     int id, pri, cic; char nome[40], recurso[12];
     char linha[128]; //Tamanho de caracteres que pode ser lido por linha
@@ -133,14 +133,31 @@ void carregarProcessos() {  //Parte da Leitura de Arquivo
     printf("Processos carregados com sucesso!\n");
 }
 
-// Função de Executar um Unico Ciclo
+// Função de Executar um Único Ciclo do Escalonador
 void executarCicloUnico(Escalonador *e) {
-    // Implementar lógica para executar um ciclo único do escalonador
+    Processo temp;
+    // Prioridade: Alta -> Média -> Baixa -> Bloqueados
+    if (!estaVazia(&e->Alta)) { //Se a fila alta não estiver vazia, executar primeiro o processo dela
+        fila_remover(&e->Alta, &temp);
+    } 
+    else if (!estaVazia(&e->Media)) { //Se a fila média não estiver vazia, executar processo dela	
+        fila_remover(&e->Media, &temp);
+    } 
+    else if (!estaVazia(&e->Baixa)) { //Se a fila baixa não estiver vazia, executar processo dela
+        fila_remover(&e->Baixa, &temp);
+    } 
+    else if (!estaVazia(&e->Bloqueados)) { // desbloqueia o processo e retorna à prioridade original
+        fila_remover(&e->Bloqueados, &temp);
+        temp.prioridade = temp.prioridadeOriginal;
+        fila_adicionar(&e->Alta, &temp);
+        printf("Processo %s desbloqueado e voltou para prioridade %d\n",temp.nome, temp.prioridade);
+        return;
+    }
 }
-
+   
 // Função de Rodar Escalonador
 void rodarEscalonador(Escalonador *e) {
-    if (todasListasVazias) { // Verifica se todas as listas estão vazias antes de iniciar
+    if (todasListasVazias(e)) { // Verifica se todas as listas estão vazias antes de iniciar
         printf("Nenhum processo para executar.\n");
         return;
     }
