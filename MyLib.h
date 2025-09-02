@@ -199,15 +199,100 @@ int executarCicloUnico(Escalonador *e, Fila *origem) {
     // Se ciclos chegar a 0, terminou: não volta pra nenhuma fila.
 
     return 1; // consumiu 1 ciclo de CPU
-}  
-// Função de Rodar Escalonador
-void rodarEscalonador(Escalonador *e) {
-    if (todasListasVazias(e)) { // Verifica se todas as listas estão vazias antes de iniciar
-        printf("Nenhum processo para executar.\n");
+}
+
+
+void rodarEscalonadorUnico (Escalonador *e){
+	    if (todasListasVazias(e)) {
+        printf("Nenhum processo para escalonar!\n");
         return;
     }
-    while (!todasListasVazias(e)) { // Enquanto ainda houver processos em alguma fila
-        executarCicloUnico(e); // Executa um ciclo de CPU simulando escalonamento
+		
+	    printf("--------------------------------------------------\n");
+        desbloquearProcesso(e);
+
+        // 2) Preferência normal: Alta (até 5 seguidas), depois Média, depois Baixa
+        if (!estaVazia(&e->Alta) && contador < 5) {
+            executarCicloUnico(e, &e->Alta);
+            contador++; // OBS: ideal contar só se consumiu CPU (ver TODO abaixo)
+        }
+        else if (contador >= 5) {
+            // Anti-inanição: força Média; se não houver, força Baixa; se só houver Alta, executa Alta
+            if (!estaVazia(&e->Media)) {
+            	printf("Anti Inanição : ");
+                executarCicloUnico(e, &e->Media);
+                contador = 0;
+            } else if (!estaVazia(&e->Baixa)) {
+            	printf("Anti Inanição : ");
+                executarCicloUnico(e, &e->Baixa);
+                contador = 0;
+            } else if (!estaVazia(&e->Alta)) {
+                // fallback: somente Alta disponível
+                executarCicloUnico(e, &e->Alta);
+                printf("Anti Inanição Falhou : ");
+                // Mantemos contador em 5 para continuar forçando quando Média/Baixa surgirem
+            }
+        }
+        else if (!estaVazia(&e->Media)) {
+            executarCicloUnico(e, &e->Media);
+            contador = 0;
+            printf("Processo de Media prioridade Executado\n");
+        }
+        else if (!estaVazia(&e->Baixa)) {
+            executarCicloUnico(e, &e->Baixa);
+            contador = 0; // <-- zerar também na baixa
+            printf("Processo de Baixa Prioridade Executado\n");
+        }
+        // Caso contrário: todas vazias (ou apenas bloqueados aguardando próximo ciclo); o while reavalia.
     }
+
+
+// Função de Rodar Escalonador
+void rodarEscalonador(Escalonador *e) {
+    if (todasListasVazias(e)) {
+        printf("Nenhum processo para escalonar!\n");
+        return;
+    }
+
+    while (!todasListasVazias(e)) {
+        // 1) Desbloqueia um processo por ciclo (se houver)
+        printf("--------------------------------------------------\n");
+        desbloquearProcesso(e);
+
+        // 2) Preferência normal: Alta (até 5 seguidas), depois Média, depois Baixa
+        if (!estaVazia(&e->Alta) && contador < 5) {
+            executarCicloUnico(e, &e->Alta);
+            contador++; // OBS: ideal contar só se consumiu CPU (ver TODO abaixo)
+        }
+        else if (contador >= 5) {
+            // Anti-inanição: força Média; se não houver, força Baixa; se só houver Alta, executa Alta
+            if (!estaVazia(&e->Media)) {
+            	printf("Anti Inanição : ");
+                executarCicloUnico(e, &e->Media);
+                contador = 0;
+            } else if (!estaVazia(&e->Baixa)) {
+            	printf("Anti Inanição : ");
+                executarCicloUnico(e, &e->Baixa);
+                contador = 0;
+            } else if (!estaVazia(&e->Alta)) {
+                // fallback: somente Alta disponível
+                executarCicloUnico(e, &e->Alta);
+                printf("Anti Inanição Falhou :");
+                // Mantemos contador em 5 para continuar forçando quando Média/Baixa surgirem
+            }
+        }
+        else if (!estaVazia(&e->Media)) {
+            executarCicloUnico(e, &e->Media);
+            contador = 0;
+            printf("Processo de Media prioridade Executado\n");
+        }
+        else if (!estaVazia(&e->Baixa)) {
+            executarCicloUnico(e, &e->Baixa);
+            contador = 0; // <-- zerar também na baixa
+            printf("Processo de Media Prioridade Executado\n");
+        }
+        // Caso contrário: todas vazias (ou apenas bloqueados aguardando próximo ciclo); o while reavalia.
+    }
+	printf("--------------------------------------------------\n");
     printf("Escalonamento concluído!\n");
 }
