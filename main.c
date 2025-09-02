@@ -40,7 +40,8 @@ int main() {
                             if (todasListasVazias(&escalonador)) {
                                 printf("Nenhum processo carregado!\n");
                             } else {
-                                executarCicloUnico(&escalonador);
+                                rodarEscalonadorUnico(&escalonador);
+                                printf("--------------------------------------------------\n");
                             }
                             system("pause");
                             break;
@@ -70,5 +71,4 @@ int main() {
 
     return 0 ;
 }
-
 
