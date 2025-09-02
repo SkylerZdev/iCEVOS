@@ -3,6 +3,8 @@
 #include <string.h>
 #include <stdbool.h>
 
+int contador = 0;
+
 typedef struct Processo {
     int id;
     char nome[40];
@@ -133,28 +135,71 @@ void carregarProcessos() {  //Parte da Leitura de Arquivo
     printf("Processos carregados com sucesso!\n");
 }
 
-// Função de Executar um Único Ciclo do Escalonador
-void executarCicloUnico(Escalonador *e) {
-    Processo temp;
-    // Prioridade: Alta -> Média -> Baixa -> Bloqueados
-    if (!estaVazia(&e->Alta)) { //Se a fila alta não estiver vazia, executar primeiro o processo dela
-        fila_remover(&e->Alta, &temp);
-    } 
-    else if (!estaVazia(&e->Media)) { //Se a fila média não estiver vazia, executar processo dela	
-        fila_remover(&e->Media, &temp);
-    } 
-    else if (!estaVazia(&e->Baixa)) { //Se a fila baixa não estiver vazia, executar processo dela
-        fila_remover(&e->Baixa, &temp);
-    } 
-    else if (!estaVazia(&e->Bloqueados)) { // desbloqueia o processo e retorna à prioridade original
-        fila_remover(&e->Bloqueados, &temp);
-        temp.prioridade = temp.prioridadeOriginal;
-        fila_adicionar(&e->Alta, &temp);
-        printf("Processo %s desbloqueado e voltou para prioridade %d\n",temp.nome, temp.prioridade);
-        return;
+void desbloquearProcesso(Escalonador *e) {
+    Processo p;
+    if (fila_remover(&e->Bloqueados, &p)) {
+        if (p.prioridadeOriginal == 1) {
+		fila_adicionar(&e->Alta,  &p);
+		printf("Processo %s desbloqueado e voltou para prioridade %d\n", p.nome, p.prioridade);
+		}
+        else if (p.prioridadeOriginal == 2) {
+		fila_adicionar(&e->Media, &p);
+		printf("Processo %s desbloqueado e voltou para prioridade %d\n", p.nome, p.prioridade);
+		}
+        else {
+		fila_adicionar(&e->Baixa, &p);
+		printf("Processo %s desbloqueado e voltou para prioridade %d\n", p.nome, p.prioridade);
+		}
     }
 }
-   
+
+// Função de Executar um Único Ciclo do Escalonador
+int executarCicloUnico(Escalonador *e, Fila *origem) {
+    Processo temp;
+
+    // 1) Tenta remover do início da fila 'origem'
+    if (!fila_remover(origem, &temp)) {
+        return 0; // fila vazia: nada a fazer neste ciclo
+    }
+
+    // 2) Bloqueio por DISCO (primeira vez não executa CPU)
+    if (!temp.jaBloqueado && strcmp(temp.recurso, "DISCO") == 0) {
+        temp.jaBloqueado = true;
+        fila_adicionar(&e->Bloqueados, &temp);
+        printf("Processo %s foi bloqueado (Recurso:%s) \n", temp.nome, temp.recurso);
+        return 0; // não consumiu CPU
+    }
+
+    // (Opcional) Se por algum motivo já veio com ciclos <= 0, descarte
+    if (temp.ciclos <= 0) {
+    	printf("Processo %s Finalizado\n", temp.nome);
+        // processo "fantasma": não re-enfileira, não consome CPU
+        return 0;
+    }
+
+    // 3) Executa 1 ciclo de CPU
+    temp.ciclos--;
+	printf("Executando processo %s (ciclos restantes: %d)\n", temp.nome, temp.ciclos);
+           
+    // 4) Pós-execução: se ainda restam ciclos, volta ao fim da fila de origem (pela prioridade original)
+    if (temp.ciclos > 0) {
+        if      (temp.prioridadeOriginal == 1) {
+		fila_adicionar(&e->Alta,  &temp);
+		printf("O Processo %s executou um ciclo e voltou pra fila Alta\n", temp.nome);
+		}
+        else if (temp.prioridadeOriginal == 2) {
+			fila_adicionar(&e->Media, &temp);
+			printf("O Processo %s executou um ciclo e voltou pra fila Media\n", temp.nome);
+		}
+        else {
+		fila_adicionar(&e->Baixa, &temp);
+		printf("O Processo %s executou um ciclo e voltou pra fila Baixa\n", temp.nome);	
+		}
+    }
+    // Se ciclos chegar a 0, terminou: não volta pra nenhuma fila.
+
+    return 1; // consumiu 1 ciclo de CPU
+}  
 // Função de Rodar Escalonador
 void rodarEscalonador(Escalonador *e) {
     if (todasListasVazias(e)) { // Verifica se todas as listas estão vazias antes de iniciar
