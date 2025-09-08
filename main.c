@@ -3,6 +3,7 @@
 #include <locale.h>
 #include "MyLib.h"
 
+
 int opMenuPrincipal, opMenuEscalonador;
 
 int main() {
@@ -15,7 +16,7 @@ int main() {
         printf("|1 - Escalonador de Processos|\n");
         printf("|         2 - Sair           |\n");
         printf("|==========================  |\n");
-        printf("Escolha uma opção: ");
+        printf("Escolha uma opcao: ");
         scanf("%d", &opMenuPrincipal);
 
         switch(opMenuPrincipal) {
@@ -24,8 +25,8 @@ int main() {
                     system("cls");
                     printf("|========= ESCALONADOR ===========|\n");
                     printf("|1 - Carregar processos do arquivo|\n");
-                    printf("|2 - Executar ciclo único         |\n");
-                    printf("|3 - Executar até terminar        |\n");
+                    printf("|2 - Executar ciclo unico         |\n");
+                    printf("|3 - Executar ate terminar        |\n");
                     printf("|4 - Voltar ao menu principal     |\n");
 					printf("|=================================|\n");
                     printf("Escolha: ");
