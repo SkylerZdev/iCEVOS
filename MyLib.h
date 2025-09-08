@@ -212,9 +212,10 @@ void rodarEscalonadorUnico (Escalonador *e){
         desbloquearProcesso(e);
 
         // 2) Preferência normal: Alta (até 5 seguidas), depois Média, depois Baixa
-        if (!estaVazia(&e->Alta) && contador < 5) {
-            executarCicloUnico(e, &e->Alta);
-            contador++; // OBS: ideal contar só se consumiu CPU (ver TODO abaixo)
+         if (!estaVazia(&e->Alta) && contador < 5) {
+            if(executarCicloUnico(e, &e->Alta)){
+            contador++; // Conta apenas se consumiu CPU
+            }
         }
         else if (contador >= 5) {
             // Anti-inanição: força Média; se não houver, força Baixa; se só houver Alta, executa Alta
@@ -261,8 +262,9 @@ void rodarEscalonador(Escalonador *e) {
 
         // 2) Preferência normal: Alta (até 5 seguidas), depois Média, depois Baixa
         if (!estaVazia(&e->Alta) && contador < 5) {
-            executarCicloUnico(e, &e->Alta);
-            contador++; // OBS: ideal contar só se consumiu CPU (ver TODO abaixo)
+            if(executarCicloUnico(e, &e->Alta)){
+            contador++; // Conta apenas se consumiu CPU
+            }
         }
         else if (contador >= 5) {
             // Anti-inanição: força Média; se não houver, força Baixa; se só houver Alta, executa Alta
