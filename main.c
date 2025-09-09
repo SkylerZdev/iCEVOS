@@ -27,7 +27,8 @@ int main() {
                     printf("|1 - Carregar processos do arquivo|\n");
                     printf("|2 - Executar ciclo unico         |\n");
                     printf("|3 - Executar ate terminar        |\n");
-                    printf("|4 - Voltar ao menu principal     |\n");
+                    printf("|4 - Impressao de Filas           |\n");
+                    printf("|5 - Voltar ao menu principal     |\n");
 					printf("|=================================|\n");
                     printf("Escolha: ");
                     scanf("%d", &opMenuEscalonador);
@@ -42,7 +43,6 @@ int main() {
                                 printf("Nenhum processo carregado!\n");
                             } else {
                                 rodarEscalonadorUnico(&escalonador);
-                                printf("--------------------------------------------------\n");
                             }
                             system("pause");
                             break;
@@ -51,25 +51,58 @@ int main() {
                             system("pause");
                             break;
                         case 4:
+                            do {
+                                system("cls");
+                                printf("|======= IMPRESSAO DE FILAS =======|\n");
+                                printf("|1 - Imprimir fila de alta prioridade|\n");
+                                printf("|2 - Imprimir fila de media prioridade|\n");
+                                printf("|3 - Imprimir fila de baixa prioridade|\n");
+                                printf("|4 - Imprimir fila de bloqueados      |\n");
+                                printf("|5 - Imprimir todas as filas          |\n");
+                                printf("|6 - Voltar ao menu anterior          |\n");
+                                printf("|====================================|\n");
+                                printf("Escolha: ");
+                                scanf("%d", &opMenuImpressao);
+                                switch(opMenuImpressao) {
+                                    case 1:
+                                        imprimirFila(&escalonador.Alta, "Alta Prioridade");
+                                        system("pause");
+                                        break;
+                                    case 2:
+                                        imprimirFila(&escalonador.Media, "Media Prioridade");
+                                        system("pause");
+                                        break;
+                                    case 3:
+                                        imprimirFila(&escalonador.Baixa, "Baixa Prioridade");
+                                        system("pause");
+                                        break;
+                                    case 4:
+                                        imprimirFila(&escalonador.Bloqueados, "Bloqueados");
+                                        system("pause");
+                                        break;
+                                    case 5:
+                                        imprimirFilasTodas(&escalonador);
+                                        system("pause");
+                                        break;
+                                    case 6:
+                                        printf("Voltando ao menu anterior...\n");
+                                        break;
+                                    default:
+                                        printf("Opção inválida!\n");
+                                        system("pause");
+                                        break;
+                                  }
+                                } while (opMenuImpressao != 6);
+                            break; 
+                        case 5:
                             break;
                         default:
                             printf("Opção inválida!\n");
                             system("pause");
                             break;
                     }
-                } while (opMenuEscalonador != 4);
-                break;
+                 } while (opMenuEscalonador != 5);
+                 break;
             }
-            case 2:
-                printf("Sair\n");
-                break;
-            default:
-                printf("Opção inválida!\n");
-                system("pause");
-                break;
-        }
-    } while (opMenuPrincipal != 2);
-
     return 0 ;
 }
-
