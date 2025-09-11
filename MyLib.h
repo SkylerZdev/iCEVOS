@@ -138,15 +138,15 @@ void desbloquearProcesso(Escalonador *e) {
     if (fila_remover(&e->Bloqueados, &p)) {
         if (p.prioridadeOriginal == 1) {
 		fila_adicionar(&e->Alta,  &p);
-		printf("Processo %s desbloqueado e voltou para prioridade %d\n", p.nome, p.prioridade);
+		printf("Processo %s desbloqueado e voltou para lista de prioridade Alta\n", p.nome);
 		}
         else if (p.prioridadeOriginal == 2) {
 		fila_adicionar(&e->Media, &p);
-		printf("Processo %s desbloqueado e voltou para prioridade %d\n", p.nome, p.prioridade);
+		printf("Processo %s desbloqueado e voltou para lista de prioridade Media\n", p.nome);
 		}
         else {
 		fila_adicionar(&e->Baixa, &p);
-		printf("Processo %s desbloqueado e voltou para prioridade %d\n", p.nome, p.prioridade);
+		printf("Processo %s desbloqueado e voltou para lista de prioridade Baixa\n", p.nome);
 		}
     }
 }
@@ -216,17 +216,17 @@ void rodarEscalonadorUnico (Escalonador *e){
         else if (e->contadorAlta >= 5) {
             // Anti-inanição: força Média; se não houver, força Baixa; se só houver Alta, executa Alta
             if (!estaVazia(&e->Media)) {
-            	printf("Anti Inanição : ");
+            	printf("Anti Inanicao : ");
                 executarCicloUnico(e, &e->Media);
                 e->contadorAlta = 0;
             } else if (!estaVazia(&e->Baixa)) {
-            	printf("Anti Inanição : ");
+            	printf("Anti Inanicao : ");
                 executarCicloUnico(e, &e->Baixa);
                 e->contadorAlta = 0;
             } else if (!estaVazia(&e->Alta)) {
                 //Executa Alta se for a unica disponivel
                 executarCicloUnico(e, &e->Alta);
-                printf("Anti Inanição Falhou : ");
+                printf("Anti Inanicao Falhou : ");
                 // Mantemos contador em 5 para continuar forçando quando Média/Baixa surgirem
             }
         }
@@ -256,4 +256,8 @@ void rodarEscalonador(Escalonador *e) {
     }
 	printf("--------------------------------------------------\n");
     printf("Escalonamento concluido!\n");
+}
+
+void rodarEscalonadorImp(){
+       //Implementar Variante de rodarEscalonador que Imprime o estado das filas a cada Ciclo
 }
