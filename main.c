@@ -39,17 +39,27 @@ int main() {
                             system("pause");
                             break;
                         case 2:
-                            if (todasListasVazias(&escalonador)) {
-                                printf("Nenhum processo carregado!\n");
-                            } else {
-                                rodarEscalonadorUnico(&escalonador);
-                            }
-                            system("pause");
-                            break;
-                        case 3:
-                            rodarEscalonador(&escalonador);
-                            system("pause");
-                            break;
+   						 if (todasListasVazias(&escalonador)) {
+        					 printf("Nenhum processo carregado!\n");
+   						 } else {
+        					 rodarEscalonadorUnico(&escalonador);
+       						 imprimirFilasTodas(&escalonador);
+    					 }
+   						 system("pause");
+    					 break;
+                        case 3:	{
+ 							int Escolha;
+ 							printf("|Aviso| Deseja imprimir as filas apos cada ciclo?\n");
+							printf("Essa opção resultara em muitas saidas no console e pode deixar a execucao mais lenta.\n");
+							printf("Digite 1 para SIM ou 0 para NAO: "); scanf("%d", &Escolha);
+     					 if(Escolha == 1) {
+    					 //rodarEscalonadorImp(&escalonador); Implementação no proximo commit
+    					 } else {
+      					   rodarEscalonador(&escalonador);
+    					 }
+   						 system("pause");
+  						 break;
+						}
                         case 4:
                             do {
                                 system("cls");
@@ -88,7 +98,7 @@ int main() {
                                         printf("Voltando ao menu anterior...\n");
                                         break;
                                     default:
-                                        printf("Opção inválida!\n");
+                                        printf("Opcao invalida!\n");
                                         system("pause");
                                         break;
                                   }
@@ -97,7 +107,7 @@ int main() {
                         case 5:
                             break;
                         default:
-                            printf("Opção inválida!\n");
+                            printf("Opcao invalida!\n");
                             system("pause");
                             break;
                     }
@@ -106,3 +116,4 @@ int main() {
             }
     return 0 ;
 }
+
