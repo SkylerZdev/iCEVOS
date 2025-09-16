@@ -4,7 +4,7 @@
 #include "MyLib.h"
 
 
-int opMenuPrincipal, opMenuEscalonador;
+int opMenuPrincipal, opMenuEscalonador, opMenuImpressao;
 
 int main() {
     setlocale(LC_ALL, "Portuguese");
@@ -110,11 +110,21 @@ int main() {
                             printf("Opcao invalida!\n");
                             system("pause");
                             break;
-                    }
-                 } while (opMenuEscalonador != 5);
-                 break;
-            }
+                    		}
+                 		} while (opMenuEscalonador != 5);
+                 		  break;
+                     }
+			case 2:
+                printf("Saindo...\n");
+                break;
+            default:
+                printf("Opcao invalida!\n");
+                system("pause");
+                break;
+        }
+    } while (opMenuPrincipal != 2);
     return 0 ;
 }
+
 
 
