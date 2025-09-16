@@ -100,7 +100,8 @@ Node *Get(Fila *f, int i){ //Retorna o nó da posição i da fila
 
 void carregarProcessos() {  //Parte da Leitura de Arquivo
     FILE *f = fopen("Processos/processos","r"); //Abre o Diretoório do arquivo 
-    if (!f) { printf("Erro ao abrir processos.txt\n");
+    if (!f) { printf("Erro ao abrir processos\n");
+			 return;
     }
     int id, pri, cic; char nome[40], recurso[12];
     char linha[128]; //Tamanho de caracteres que pode ser lido por linha
@@ -258,6 +259,65 @@ void rodarEscalonador(Escalonador *e) {
     printf("Escalonamento concluido!\n");
 }
 
-void rodarEscalonadorImp(){
-       //Implementar Variante de rodarEscalonador que Imprime o estado das filas a cada Ciclo
+void imprimirFila(Fila *f, const char *nome) {
+    if (!f) {
+        printf("Fila %s inválida.\n", nome ? nome : "(sem nome)");
+        return;
+    }
+
+    printf(" Fila %s | Tamanho atual: %d\n", nome, f->size);
+    printf("|-----------------------------------------------------------------------|\n");
+    printf("| %-3s | %-15s | %-10s | %-6s | %-8s | %-12s |\n",
+           "Id", "Nome", "Prioridade", "Ciclos", "Recurso", "Ja Bloqueado");
+    printf("|-----------------------------------------------------------------------|\n");
+
+    Node *atual = f->inicio;
+    if (!atual) {
+        printf("| %-69s |\n", "(Vazia)");
+         printf("|-----------------------------------------------------------------------|\n");
+        return;
+    }
+
+    while (atual) {
+        Processo *p = &atual->data;
+
+        const char *recurso = (p->recurso[0]) ? p->recurso : "-";
+
+        printf("| %-3d | %-15.15s | %-10d | %-6d | %-8.8s | %-12s |\n",
+               p->id,
+               p->nome,
+               p->prioridade,
+               p->ciclos,
+               recurso,
+               p->jaBloqueado ? "SIM" : "NAO");
+
+        atual = atual->prox;
+    }
+
+}
+
+
+void imprimirFilasTodas(Escalonador *e) {
+    imprimirFila(&e->Alta, "Alta Prioridade");
+    printf("|-----------------------------------------------------------------------|\n");
+    imprimirFila(&e->Media, "Media Prioridade");
+    printf("|-----------------------------------------------------------------------|\n");
+    imprimirFila(&e->Baixa, "Baixa Prioridade");
+    printf("|-----------------------------------------------------------------------|\n");
+    imprimirFila(&e->Bloqueados, "Bloqueados");
+    printf("|-----------------------------------------------------------------------|\n");
+}
+
+void rodarEscalonadorImp(Escalonador *e) {
+    if (todasListasVazias(e)) {
+        printf("Nenhum processo para escalonar!\n");
+        return;
+    }
+
+    while (!todasListasVazias(e)) {
+    rodarEscalonadorUnico(e);
+    imprimirFilasTodas(e); 
+    }
+	printf("--------------------------------------------------\n");
+    printf("Escalonamento concluido!\n");
 }
