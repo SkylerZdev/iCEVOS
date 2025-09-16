@@ -72,7 +72,7 @@ int fila_remover(Fila *f, Processo *saida) {
     return 1;
 }
 
-inline bool estaVazia(Fila *f){ //Checa se a fila está vazia
+static inline bool estaVazia(Fila *f){ //Checa se a fila está vazia
     return (f->inicio == NULL); 
 }
 
