@@ -53,7 +53,7 @@ int main() {
 							printf("Essa opção resultara em muitas saidas no console e pode deixar a execucao mais lenta.\n");
 							printf("Digite 1 para SIM ou 0 para NAO: "); scanf("%d", &Escolha);
      					 if(Escolha == 1) {
-    					 //rodarEscalonadorImp(&escalonador); Implementação no proximo commit
+    					 rodarEscalonadorImp(&escalonador);
     					 } else {
       					   rodarEscalonador(&escalonador);
     					 }
@@ -116,4 +116,5 @@ int main() {
             }
     return 0 ;
 }
+
 
